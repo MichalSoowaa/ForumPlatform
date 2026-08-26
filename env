@@ -1,0 +1,6 @@
+# Copy this file to .env (which is gitignored) and adjust if needed.
+# docker-compose.yml reads these; dotnet user-secrets holds the matching
+# connection string separately (see README "Running locally").
+POSTGRES_USER=forumplatform
+POSTGRES_PASSWORD=forumplatform_dev_password
+POSTGRES_DB=forumplatform

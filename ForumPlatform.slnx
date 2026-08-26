@@ -1,3 +1,9 @@
 <Solution>
+  <Folder Name="/Users/">
+    <Project Path="ForumPlatform.Users.Application/ForumPlatform.Users.Application.csproj" />
+    <Project Path="ForumPlatform.Users.Domain/ForumPlatform.Users.Domain.csproj" />
+    <Project Path="ForumPlatform.Users.Infrastructure/ForumPlatform.Users.Infrastructure.csproj" />
+  </Folder>
+  <Project Path="ForumPlatform.API/ForumPlatform.API.csproj" Id="0caf1ab0-15c0-44e3-b334-9deefe1cb33a" />
   <Project Path="ForumPlatform.Shared/ForumPlatform.Shared.csproj" />
 </Solution>

@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: forumplatform-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-forumplatform}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-forumplatform_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-forumplatform}
+    ports:
+      - "5432:5432"
+    volumes:
+      - forumplatform_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-forumplatform} -d ${POSTGRES_DB:-forumplatform}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  forumplatform_pgdata:
