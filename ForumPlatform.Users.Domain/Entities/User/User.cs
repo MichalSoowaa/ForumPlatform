@@ -1,13 +1,16 @@
 ﻿using ForumPlatform.Shared;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Buffers.Binary;
+using System.Security.Cryptography;
 
 namespace ForumPlatform.Users.Domain.Entities.User
 {
 	/// <summary>
 	/// User aggregate root. Owns identity (email/username), auth (password hash), and reputation.
+	/// Needs to implement interface on its own, because inherits from IdentityUser
 	/// </summary>
-	public class User : AggregateRoot<Guid>, IdentityUser<Guid>
+	public class User : IAggregateRoot<Guid>
 	{
 		public string Email { get; private set; } = String.Empty;
 		public string Username { get; private set; } = String.Empty;
@@ -24,6 +27,34 @@ namespace ForumPlatform.Users.Domain.Entities.User
 		public decimal MeritIndicator { get; private set; }
 
 		public DateTime LastActiveAt { get; private set; }
+
+		public byte[] Version { get; set; } = null!;
+		public bool IsDeleted { get; set; }
+
+		public void MarkAsDeleted()
+		{
+			IsDeleted = true;
+		}
+
+		public ulong GetVersion()
+		{
+			return Version is null ? 0 : BinaryPrimitives.ReadUInt64BigEndian(Version);
+		}
+
+		public Guid Id { get; protected set; } = default!;
+		public DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+		public DateTime UpdatedAt { get; protected set; }
+		public bool IsNew => EqualityComparer<Guid>.Default.Equals(Id, default);
+
+		public void SetCreationDate(DateTime createdAt)
+		{
+			CreatedAt = createdAt;
+		}
+
+		public void SetModifiedDate(DateTime updatedAt)
+		{
+			UpdatedAt = updatedAt;
+		}
 
 		/// <summary>
 		/// Factory method for creating a new user.
@@ -68,7 +99,7 @@ namespace ForumPlatform.Users.Domain.Entities.User
 
 		public void Delete()
 		{
-			IsDeleted = true;
+			MarkAsDeleted();
 			UpdatedAt = DateTime.UtcNow;
 		}
 	}

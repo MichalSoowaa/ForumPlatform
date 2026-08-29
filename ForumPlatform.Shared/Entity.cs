@@ -1,6 +1,6 @@
 ﻿namespace ForumPlatform.Shared
 {
-	public abstract class Entity<TId>
+	public abstract class Entity<TId> : IEntity<TId>
 	{
 		public TId Id { get; protected set; } = default!;
 		public DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
@@ -12,7 +12,7 @@
 			CreatedAt = createdAt;
 		}
 
-		public void SetUpdateDate(DateTime updatedAt)
+		public void SetModifiedDate(DateTime updatedAt)
 		{
 			UpdatedAt = updatedAt;
 		}

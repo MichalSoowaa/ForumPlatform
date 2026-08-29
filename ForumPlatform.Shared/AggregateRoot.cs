@@ -3,13 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ForumPlatform.Shared
 {
-	public abstract class AggregateRoot<TId> : Entity<TId>, ISoftDeletable
+	public abstract class AggregateRoot<TId> : Entity<TId>, IAggregateRoot<TId>
 		where TId : notnull
 	{
-		[Timestamp]
-		public byte[] Version { get; protected set; } = null!;
-
-		public bool IsDeleted { get; protected set; }
+		public byte[] Version { get; set; } = null!;
+		public bool IsDeleted { get; set; }
 
 		public void MarkAsDeleted()
 		{

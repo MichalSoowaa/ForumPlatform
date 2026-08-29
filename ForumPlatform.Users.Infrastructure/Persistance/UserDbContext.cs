@@ -9,7 +9,7 @@ namespace ForumPlatform.Users.Infrastructure.Persistance
 	/// <summary>
 	///	ASP.NET Core Identity DbContext for the Users module, using IdentityUser and IdentityRole with Guid as the key type.
 	/// </summary>
-	public class UserDbContext : IdentityDbContext<User<Guid>, IdentityRole<Guid>, Guid>
+	public class UserDbContext : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>
 	{
 		public DbSet<User> Users { get; set; } = null!;
 
