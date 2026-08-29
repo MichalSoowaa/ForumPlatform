@@ -10,7 +10,7 @@ namespace ForumPlatform.Users.Domain.Entities.User
 	/// User aggregate root. Owns identity (email/username), auth (password hash), and reputation.
 	/// Needs to implement interface on its own, because inherits from IdentityUser
 	/// </summary>
-	public class User : IAggregateRoot<Guid>
+	public class User : IdentityUser<Guid>, IAggregateRoot<Guid>
 	{
 		public string Email { get; private set; } = String.Empty;
 		public string Username { get; private set; } = String.Empty;
