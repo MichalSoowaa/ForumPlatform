@@ -25,7 +25,14 @@ builder.Services.AddOpenApi();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddMediatR(cfg =>
 	cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(LoginQuery).Assembly));
+
+
 builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserCommandValidator).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(LoginQueryValidator).Assembly);
+
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 builder.Services.AddScoped<ITokenService, TokenService>();
 

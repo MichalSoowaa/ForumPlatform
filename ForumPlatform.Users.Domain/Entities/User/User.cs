@@ -1,106 +1,99 @@
-﻿using ForumPlatform.Shared;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using System.Buffers.Binary;
-using System.Security.Cryptography;
+﻿	using ForumPlatform.Shared;
+	using Microsoft.AspNetCore.Identity;
+	using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+	using System.Buffers.Binary;
+	using System.Security.Cryptography;
 
-namespace ForumPlatform.Users.Domain.Entities.User
-{
-	/// <summary>
-	/// User aggregate root. Owns identity (email/username), auth (password hash), and reputation.
-	/// Needs to implement interface on its own, because inherits from IdentityUser
-	/// </summary>
-	public class User : IdentityUser<Guid>, IAggregateRoot<Guid>
+	namespace ForumPlatform.Users.Domain.Entities.User
 	{
-		public string Email { get; private set; } = String.Empty;
-		public string Username { get; private set; } = String.Empty;
-		public string PasswordHash { get; private set; } = String.Empty;
-		public decimal TotalReputation { get; private set; }
-
 		/// <summary>
-		/// Merit indicator — a rolling average of the quality of the user's recent posts.
-		/// Frozen (doesn't decrease) when the user is inactive.
-		/// Used alongside TotalReputation to weight the user's votes.
-		/// 
-		/// Scale: 0–1 (same as individual post scores).
+		/// User aggregate root. Owns identity (email/username), auth (password hash), and reputation.
+		/// Needs to implement interface on its own, because inherits from IdentityUser
 		/// </summary>
-		public decimal MeritIndicator { get; private set; }
-
-		public DateTime LastActiveAt { get; private set; }
-
-		public byte[] Version { get; set; } = null!;
-		public bool IsDeleted { get; set; }
-
-		public void MarkAsDeleted()
+		public class User : IdentityUser<Guid>, IAggregateRoot<Guid>
 		{
-			IsDeleted = true;
-		}
+			public decimal TotalReputation { get; private set; }
 
-		public ulong GetVersion()
-		{
-			return Version is null ? 0 : BinaryPrimitives.ReadUInt64BigEndian(Version);
-		}
+			/// <summary>
+			/// Merit indicator — a rolling average of the quality of the user's recent posts.
+			/// Frozen (doesn't decrease) when the user is inactive.
+			/// Used alongside TotalReputation to weight the user's votes.
+			/// 
+			/// Scale: 0–1 (same as individual post scores).
+			/// </summary>
+			public decimal MeritIndicator { get; private set; }
 
-		public Guid Id { get; protected set; } = default!;
-		public DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
-		public DateTime UpdatedAt { get; protected set; }
-		public bool IsNew => EqualityComparer<Guid>.Default.Equals(Id, default);
+			public DateTime LastActiveAt { get; private set; }
 
-		public void SetCreationDate(DateTime createdAt)
-		{
-			CreatedAt = createdAt;
-		}
+			public byte[] Version { get; set; } = null!;
+			public bool IsDeleted { get; set; }
 
-		public void SetModifiedDate(DateTime updatedAt)
-		{
-			UpdatedAt = updatedAt;
-		}
-
-		/// <summary>
-		/// Factory method for creating a new user.
-		/// </summary>
-		public static User Create(string email, string username, string passwordHash)
-		{
-			if(string.IsNullOrWhiteSpace(passwordHash))
-				throw new ArgumentException("Password hash cannot be null or empty.", nameof(passwordHash));
-
-			return new User
+			public void MarkAsDeleted()
 			{
-				Id = Guid.NewGuid(),
-				Email = email.ToLower(),
-				Username = username,
-				PasswordHash = passwordHash,
-				TotalReputation = 0,
-				MeritIndicator = 0.5m,
-				LastActiveAt = DateTime.UtcNow
-			};
-		}
+				IsDeleted = true;
+			}
 
-		public void AddReputation(decimal amount)
-		{
-			TotalReputation += amount;
-			LastActiveAt = DateTime.UtcNow;
-		}
+			public ulong GetVersion()
+			{
+				return Version is null ? 0 : BinaryPrimitives.ReadUInt64BigEndian(Version);
+			}
 
-		public void SetMeritIndicator(decimal merit)
-		{
-			if (merit < 0 || merit > 1)
-				throw new ArgumentOutOfRangeException(nameof(merit), "Merit indicator must be between 0 and 1.");
+			//public Guid Id { get; protected set; } = default!;
+			public DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+			public DateTime UpdatedAt { get; protected set; }
+			public bool IsNew => EqualityComparer<Guid>.Default.Equals(Id, default);
 
-			MeritIndicator = merit;
-			UpdateLastActive();
-		}
+			public void SetCreationDate(DateTime createdAt)
+			{
+				CreatedAt = createdAt;
+			}
 
-		public void UpdateLastActive()
-		{
-			LastActiveAt = DateTime.UtcNow;
-			UpdatedAt = DateTime.UtcNow;
-		}
+			public void SetModifiedDate(DateTime updatedAt)
+			{
+				UpdatedAt = updatedAt;
+			}
 
-		public void Delete()
-		{
-			MarkAsDeleted();
-			UpdatedAt = DateTime.UtcNow;
+			/// <summary>
+			/// Factory method for creating a new user.
+			/// </summary>
+			public static User Create(string email, string username)
+			{
+				return new User
+				{
+					Id = Guid.NewGuid(),
+					Email = email.ToLower(),
+					UserName = username,
+					TotalReputation = 0,
+					MeritIndicator = 0.5m,
+					LastActiveAt = DateTime.UtcNow
+				};
+			}
+
+			public void AddReputation(decimal amount)
+			{
+				TotalReputation += amount;
+				LastActiveAt = DateTime.UtcNow;
+			}
+
+			public void SetMeritIndicator(decimal merit)
+			{
+				if (merit < 0 || merit > 1)
+					throw new ArgumentOutOfRangeException(nameof(merit), "Merit indicator must be between 0 and 1.");
+
+				MeritIndicator = merit;
+				UpdateLastActive();
+			}
+
+			public void UpdateLastActive()
+			{
+				LastActiveAt = DateTime.UtcNow;
+				UpdatedAt = DateTime.UtcNow;
+			}
+
+			public void Delete()
+			{
+				MarkAsDeleted();
+				UpdatedAt = DateTime.UtcNow;
+			}
 		}
 	}
-}

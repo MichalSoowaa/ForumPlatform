@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using ForumPlatform.Users.Infrastructure.Persistance;
 using Microsoft.AspNetCore.Identity;
+using ForumPlatform.Users.Domain.Entities.User;
 
 namespace ForumPlatform.Users.Infrastructure
 {
@@ -20,7 +21,7 @@ namespace ForumPlatform.Users.Infrastructure
 			services.AddDbContext<UserDbContext>(options =>
 				options.UseNpgsql(connectionString));
 
-			services.AddIdentityCore<IdentityUser<Guid>>()
+			services.AddIdentityCore<User>()
 				.AddEntityFrameworkStores<UserDbContext>();
 
 			return services;

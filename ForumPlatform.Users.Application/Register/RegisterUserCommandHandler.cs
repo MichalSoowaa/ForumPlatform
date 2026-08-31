@@ -7,10 +7,10 @@ namespace ForumPlatform.Users.Application.Register
 {
 	public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
 	{
-		private readonly UserManager<IdentityUser<Guid>> _userManager;
+		private readonly UserManager<User> _userManager;
 		private readonly ITokenService _tokenService;
 
-		public RegisterUserCommandHandler(UserManager<IdentityUser<Guid>> userManager, ITokenService tokenService)
+		public RegisterUserCommandHandler(UserManager<User> userManager, ITokenService tokenService)
 		{
 			_userManager = userManager;
 			_tokenService = tokenService;
@@ -25,21 +25,13 @@ namespace ForumPlatform.Users.Application.Register
 				throw new Exception($"User with email {request.Email} already exists.");
 			}
 
-			var passwordHasher = new PasswordHasher<IdentityUser<Guid>>();
-			var dummyUser = new IdentityUser<Guid>();
-			var passwordHash = passwordHasher.HashPassword(dummyUser, request.Password);
+			//var passwordHasher = new PasswordHasher<IdentityUser<Guid>>();
+			//var dummyUser = new IdentityUser<Guid>();
+			//var passwordHash = passwordHasher.HashPassword(dummyUser, request.Password);
 
-			var user = User.Create(request.Email, request.Username, passwordHash);
+			var user = User.Create(request.Email, request.Username);
 
-			var identityUser = new IdentityUser<Guid>
-			{
-				Id = user.Id,
-				UserName = user.Username,
-				Email = user.Email,
-				EmailConfirmed = false
-			};
-
-			var result = await _userManager.CreateAsync(identityUser, request.Password);
+			var result = await _userManager.CreateAsync(user, request.Password);
 
 			if (!result.Succeeded)
 			{
@@ -47,9 +39,9 @@ namespace ForumPlatform.Users.Application.Register
 				throw new Exception($"Failed to create user: {errors}");
 			}
 
-			var token = _tokenService.GenerateToken(user.Id, user.Email, user.Username);
+			var token = _tokenService.GenerateToken(user.Id, user.Email, user.UserName);
 
-			return new RegisterUserResponse(user.Id, user.Email, user.Username, token);
+			return new RegisterUserResponse(user.Id, user.Email, user.UserName, token);
 		}
 	}
 }

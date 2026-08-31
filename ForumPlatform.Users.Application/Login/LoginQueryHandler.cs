@@ -1,15 +1,16 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using ForumPlatform.Users.Application.Abstraction;
+using ForumPlatform.Users.Domain.Entities.User;
 
 namespace ForumPlatform.Users.Application.Login
 {
 	public class LoginQueryHandler : IRequestHandler<LoginQuery, LoginResponse>
 	{
-		private readonly UserManager<IdentityUser<Guid>> _userManager;
+		private readonly UserManager<User> _userManager;
 		private readonly ITokenService _tokenService;
 
-		public LoginQueryHandler(UserManager<IdentityUser<Guid>> userManager, ITokenService tokenService)
+		public LoginQueryHandler(UserManager<User> userManager, ITokenService tokenService)
 		{
 			_userManager = userManager;
 			_tokenService = tokenService;
