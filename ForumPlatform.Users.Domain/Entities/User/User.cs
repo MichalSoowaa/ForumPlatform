@@ -25,17 +25,11 @@
 
 			public DateTime LastActiveAt { get; private set; }
 
-			public byte[] Version { get; set; } = null!;
 			public bool IsDeleted { get; set; }
 
 			public void MarkAsDeleted()
 			{
 				IsDeleted = true;
-			}
-
-			public ulong GetVersion()
-			{
-				return Version is null ? 0 : BinaryPrimitives.ReadUInt64BigEndian(Version);
 			}
 
 			//public Guid Id { get; protected set; } = default!;

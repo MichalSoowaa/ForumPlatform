@@ -89,19 +89,15 @@ app.MapGet("/health/db", async (UserDbContext db) =>
 
 app.MapPost("/auth/register", async (RegisterUserCommand command, IMediator mediator) =>
 {
-	try
-	{
+	//try
+	//{
 		var result = await mediator.Send(command);
 		return Results.Created("/auth/register", result);
-	}
-	catch(InvalidOperationException ex)
-	{
-		return Results.BadRequest(new { error = ex.Message });
-	}
-	catch (Exception ex)
-	{
-		return Results.Problem(ex.Message, statusCode: 500);
-	}
+	//}
+	//catch(InvalidOperationException ex)
+	//{
+	//	return Results.BadRequest(new { error = ex.Message });
+	//}
 })
 	.WithName("RegisterUser")
 	.Produces(StatusCodes.Status201Created)
@@ -117,10 +113,6 @@ app.MapPost("/auth/login", async (LoginQuery query, IMediator mediator) =>
 	catch (UnauthorizedAccessException ex)
 	{
 		return Results.Unauthorized();
-	}
-	catch (Exception ex)
-	{
-		return Results.Problem(ex.Message, statusCode: 500);
 	}
 })
 	.WithName("LoginUser")

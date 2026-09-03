@@ -18,7 +18,7 @@ namespace ForumPlatform.Users.Infrastructure.Persistance
 			builder.Property(u => u.CreatedAt).IsRequired();
 			builder.Property(u => u.UpdatedAt);
 			builder.Property(u => u.IsDeleted).IsRequired().HasDefaultValue(false);
-			builder.Property(u => u.Version).IsRowVersion(); // Concurrency token for optimistic concurrency control
+			builder.Property<uint>("xmin").HasColumnType("xid").IsRowVersion(); // Concurrency token for optimistic concurrency control
 
 			builder.HasIndex(u => u.Email).IsUnique().HasFilter("\"IsDeleted\" = false"); // Unique index on Email for non-deleted users
 			builder.HasIndex(u => u.UserName).IsUnique().HasFilter("\"IsDeleted\" = false");

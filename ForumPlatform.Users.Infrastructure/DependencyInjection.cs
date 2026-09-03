@@ -21,7 +21,15 @@ namespace ForumPlatform.Users.Infrastructure
 			services.AddDbContext<UserDbContext>(options =>
 				options.UseNpgsql(connectionString));
 
-			services.AddIdentityCore<User>()
+			// match validation with my own
+			services.AddIdentityCore<User>(options =>
+			{
+				options.Password.RequireDigit = false;
+				options.Password.RequireLowercase = false;
+				options.Password.RequireUppercase = false;
+				options.Password.RequireNonAlphanumeric = false;
+				options.Password.RequiredLength = 8;
+			})
 				.AddEntityFrameworkStores<UserDbContext>();
 
 			return services;

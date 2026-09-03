@@ -6,7 +6,7 @@ import { defineConfig } from 'vite'
 // without dealing with CORS during local development. In production, the frontend is served separately and calls the API's real URL directly (see src/api/client.js)
 export default defineConfig({
   plugins: [react()],
-  servers: {
+  server: {
     port: 5173,
     proxy: {
       '/api': {
