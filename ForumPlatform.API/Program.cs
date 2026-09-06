@@ -89,15 +89,8 @@ app.MapGet("/health/db", async (UserDbContext db) =>
 
 app.MapPost("/auth/register", async (RegisterUserCommand command, IMediator mediator) =>
 {
-	//try
-	//{
-		var result = await mediator.Send(command);
-		return Results.Created("/auth/register", result);
-	//}
-	//catch(InvalidOperationException ex)
-	//{
-	//	return Results.BadRequest(new { error = ex.Message });
-	//}
+	var result = await mediator.Send(command);
+	return Results.Created("/auth/register", result);
 })
 	.WithName("RegisterUser")
 	.Produces(StatusCodes.Status201Created)
