@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ForumPlatform.Users.Domain.Entities.User;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ForumPlatform.Users.Domain.Entities;
 
 namespace ForumPlatform.Users.Infrastructure.Persistance
 {

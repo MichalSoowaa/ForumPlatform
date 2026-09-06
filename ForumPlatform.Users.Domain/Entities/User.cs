@@ -1,10 +1,10 @@
-﻿	using ForumPlatform.Shared;
-	using Microsoft.AspNetCore.Identity;
-	using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-	using System.Buffers.Binary;
-	using System.Security.Cryptography;
+﻿using ForumPlatform.Shared;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Buffers.Binary;
+using System.Security.Cryptography;
 
-	namespace ForumPlatform.Users.Domain.Entities.User
+namespace ForumPlatform.Users.Domain.Entities
 	{
 		/// <summary>
 		/// User aggregate root. Owns identity (email/username), auth (password hash), and reputation.

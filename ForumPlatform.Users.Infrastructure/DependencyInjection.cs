@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using ForumPlatform.Users.Infrastructure.Persistance;
 using Microsoft.AspNetCore.Identity;
-using ForumPlatform.Users.Domain.Entities.User;
+using ForumPlatform.Users.Domain.Entities;
 
 namespace ForumPlatform.Users.Infrastructure
 {

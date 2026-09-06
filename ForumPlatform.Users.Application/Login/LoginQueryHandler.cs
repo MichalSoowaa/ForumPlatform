@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using ForumPlatform.Users.Application.Abstraction;
-using ForumPlatform.Users.Domain.Entities.User;
+using ForumPlatform.Users.Domain.Entities;
 
 namespace ForumPlatform.Users.Application.Login
 {

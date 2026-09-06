@@ -1,4 +1,9 @@
 <Solution>
+  <Folder Name="/Forum/">
+    <Project Path="ForumPlatform.Forum.Application/ForumPlatform.Forum.Application.csproj" Id="b680a600-6e28-474f-912f-6467a468e330" />
+    <Project Path="ForumPlatform.Forum.Domain/ForumPlatform.Forum.Domain.csproj" Id="91a52dc6-bf2a-4bfb-96eb-63134efbe546" />
+    <Project Path="ForumPlatform.Forum.Infrastructure/ForumPlatform.Forum.Infrastructure.csproj" Id="f41b8442-a538-449e-858a-7e8ea81454e1" />
+  </Folder>
   <Folder Name="/Users/">
     <Project Path="ForumPlatform.Users.Application/ForumPlatform.Users.Application.csproj" />
     <Project Path="ForumPlatform.Users.Domain/ForumPlatform.Users.Domain.csproj" />

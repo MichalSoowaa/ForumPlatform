@@ -2,7 +2,7 @@
 using ForumPlatform.Users.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using ForumPlatform.Users.Domain.Entities.User;
+using ForumPlatform.Users.Domain.Entities;
 
 namespace ForumPlatform.Users.Infrastructure.Persistance
 {
