@@ -2,9 +2,9 @@
 
 namespace ForumPlatform.Forum.Application.CreateSubforum
 {
-	public class CreateSubforumValidator : AbstractValidator<CreateSubforumCommand>
+	public class CreateSubforumCommandValidator : AbstractValidator<CreateSubforumCommand>
 	{
-		public CreateSubforumValidator() 
+		public CreateSubforumCommandValidator() 
 		{
 			RuleFor(x => x.Name)
 				.NotEmpty().WithMessage("Subforum name is required.")

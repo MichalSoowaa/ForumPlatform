@@ -22,6 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ForumPlatform.Forum.Application\ForumPlatform.Forum.Application.csproj" />
+    <ProjectReference Include="..\ForumPlatform.Forum.Infrastructure\ForumPlatform.Forum.Infrastructure.csproj" />
     <ProjectReference Include="..\ForumPlatform.Users.Application\ForumPlatform.Users.Application.csproj" />
     <ProjectReference Include="..\ForumPlatform.Users.Infrastructure\ForumPlatform.Users.Infrastructure.csproj" />
   </ItemGroup>

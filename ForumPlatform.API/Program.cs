@@ -12,6 +12,11 @@ using ForumPlatform.API.Middleware;
 using ForumPlatform.API.Auth;
 using ForumPlatform.Users.Application.Abstraction;
 using ForumPlatform.API.Behaviours;
+using ForumPlatform.Forum.Application.CreateThread;
+using ForumPlatform.Forum.Application.CreateSubforum;
+using ForumPlatform.Forum.Application.CreateComment;
+using ForumPlatform.Forum.Infrastructure;
+using ForumPlatform.API.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,16 +27,22 @@ builder.Host.UseSerilog((context, configuration) =>
 		.WriteTo.Console());
 
 builder.Services.AddOpenApi();
-builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddMediatR(cfg =>
 	cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+builder.Services.AddUsersInfrastructure(builder.Configuration);
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(LoginQuery).Assembly));
-
-
 builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserCommandValidator).Assembly);
 builder.Services.AddValidatorsFromAssembly(typeof(LoginQueryValidator).Assembly);
+
+builder.Services.AddForumInfrastructure(builder.Configuration);
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateSubforumCommand).Assembly));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateThreadCommand).Assembly));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateCommentCommand).Assembly));
+builder.Services.AddValidatorsFromAssembly(typeof(CreateSubforumCommandValidator).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(CreateThreadCommandValidator).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(CreateCommentCommandValidator).Assembly);
 
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -87,29 +98,7 @@ app.MapGet("/health/db", async (UserDbContext db) =>
 })
 	.WithName("HealthDb");
 
-app.MapPost("/auth/register", async (RegisterUserCommand command, IMediator mediator) =>
-{
-	var result = await mediator.Send(command);
-	return Results.Created("/auth/register", result);
-})
-	.WithName("RegisterUser")
-	.Produces(StatusCodes.Status201Created)
-	.Produces(StatusCodes.Status400BadRequest);
-
-app.MapPost("/auth/login", async (LoginQuery query, IMediator mediator) =>
-{
-	try
-	{
-		var result = await mediator.Send(query);
-		return Results.Ok(result);
-	}
-	catch (UnauthorizedAccessException ex)
-	{
-		return Results.Unauthorized();
-	}
-})
-	.WithName("LoginUser")
-	.Produces(StatusCodes.Status200OK)
-	.Produces(StatusCodes.Status401Unauthorized);
+app.MapForumEndpoints();
+app.MapAuthEndpoints();
 
 app.Run();
