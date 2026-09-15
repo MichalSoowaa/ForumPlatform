@@ -2,6 +2,7 @@
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ForumPlatform.API.Auth
 {
@@ -40,7 +41,19 @@ namespace ForumPlatform.API.Auth
 				new Claim(ClaimTypes.Name, username)
 			};
 
-			return "generated_token";
+			var tokenDescriptor = new SecurityTokenDescriptor
+			{
+				Subject = new ClaimsIdentity(claims),
+				Expires = DateTime.UtcNow.AddMinutes(_expirationMinutes),
+				Issuer = _issuer,
+				Audience = _audience,
+				SigningCredentials = signingCredentials,
+			};
+
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var token = tokenHandler.CreateToken(tokenDescriptor);
+
+			return tokenHandler.WriteToken(token);
 		}
 	}
 }
