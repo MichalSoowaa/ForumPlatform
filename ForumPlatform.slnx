@@ -4,6 +4,11 @@
     <Project Path="ForumPlatform.Forum.Domain/ForumPlatform.Forum.Domain.csproj" Id="91a52dc6-bf2a-4bfb-96eb-63134efbe546" />
     <Project Path="ForumPlatform.Forum.Infrastructure/ForumPlatform.Forum.Infrastructure.csproj" Id="f41b8442-a538-449e-858a-7e8ea81454e1" />
   </Folder>
+  <Folder Name="/Reputation/">
+    <Project Path="ForumPlatform.Reputation.Application/ForumPlatform.Reputation.Application.csproj" Id="9afb5ae3-c144-4678-86ce-4a1da9735c69" />
+    <Project Path="ForumPlatform.Reputation.Domain/ForumPlatform.Reputation.Domain.csproj" Id="4e575cb4-3cb1-4139-85c6-c966ff67e96f" />
+    <Project Path="ForumPlatform.Reputation.Infrastructure/ForumPlatform.Reputation.Infrastructure.csproj" Id="29bc79bc-adce-47b0-876f-1306dac2553f" />
+  </Folder>
   <Folder Name="/Users/">
     <Project Path="ForumPlatform.Users.Application/ForumPlatform.Users.Application.csproj" />
     <Project Path="ForumPlatform.Users.Domain/ForumPlatform.Users.Domain.csproj" />
