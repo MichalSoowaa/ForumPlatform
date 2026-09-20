@@ -1,4 +1,5 @@
 ﻿using ForumPlatform.Forum.Infrastructure.Persistance;
+using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Th = ForumPlatform.Forum.Domain.Entities.Thread;
@@ -8,15 +9,20 @@ namespace ForumPlatform.Forum.Application.CreateThread
 	public class CreateThreadCommandHandler : IRequestHandler<CreateThreadCommand, CreateThreadResponse>
 	{
 		private readonly ForumDbContext _context;
+		private readonly IBackgroundJobClient _backgroundJobClient;
 
-		public CreateThreadCommandHandler(ForumDbContext context)
+		public CreateThreadCommandHandler(
+			ForumDbContext context, IBackgroundJobClient backgroundJobClient)
 		{
 			_context = context;
+			_backgroundJobClient = backgroundJobClient;
 		}
 
-		public async Task<CreateThreadResponse> Handle(CreateThreadCommand request, CancellationToken token)
+		public async Task<CreateThreadResponse> Handle(
+			CreateThreadCommand request, CancellationToken token)
 		{
-			var subforumExists = await _context.Subforums.AnyAsync(s => s.Id == request.SubforumId, token);
+			var subforumExists = await 
+				_context.Subforums.AnyAsync(s => s.Id == request.SubforumId, token);
 
 			if (!subforumExists)
 				throw new InvalidOperationException($"Subforum {request.SubforumId} does not exist.");

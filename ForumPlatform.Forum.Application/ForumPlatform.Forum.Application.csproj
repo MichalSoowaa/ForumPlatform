@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ForumPlatform.Forum.Infrastructure\ForumPlatform.Forum.Infrastructure.csproj" />
+    <ProjectReference Include="..\ForumPlatform.Reputation.Application\ForumPlatform.Reputation.Application.csproj" />
   </ItemGroup>
 
 </Project>
