@@ -18,6 +18,9 @@ namespace ForumPlatform.Forum.Infrastructure.Persistance
 			builder.Property(t => t.CommentCount).IsRequired().HasDefaultValue(0);
 			builder.Property(t => t.LastActivityAt).IsRequired();
 			builder.Property(t => t.CreatedAt).IsRequired();
+			builder.Property(t => t.FinalScore)
+				.HasPrecision(5, 4)
+				.HasDefaultValue(0.5m);
 
 			builder.Property<uint>("xmin").HasColumnType("xid").IsRowVersion();
 

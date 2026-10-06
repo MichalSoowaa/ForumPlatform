@@ -14,6 +14,7 @@ namespace ForumPlatform.Forum.Domain.Entities
 		public Guid AuthorId { get; private set; }
 		public Guid? ParentCommentId { get; private set; }
 		public int Depth { get; private set; }
+		public decimal FinalScore { get; private set; } = 0.5m; // Neutral prior until assessed/voted on.
 
 		protected Comment() { }
 
@@ -72,6 +73,20 @@ namespace ForumPlatform.Forum.Domain.Entities
 		{
 			if (string.IsNullOrWhiteSpace(body))
 				throw new ArgumentException("Comment body cannot be empty.", nameof(body));
+		}
+
+		/// <summary>
+		/// Overwrites the cached, displayed quality score. Called by the Reputation module's ContentScoreRecalculator.
+		/// </summary>
+		/// <param name="finalScore"></param>
+		/// <exception cref="ArgumentOutOfRangeException"></exception>
+		public void ApplyFinalScore(decimal finalScore)
+		{
+			if (finalScore < 0 || finalScore > 1)
+				throw new ArgumentOutOfRangeException(nameof(finalScore), "Final score must be between 0 and 1.");
+
+			FinalScore = finalScore;
+			UpdatedAt = DateTime.UtcNow;
 		}
 	}
 }

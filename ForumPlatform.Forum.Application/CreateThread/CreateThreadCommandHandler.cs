@@ -1,4 +1,6 @@
 ﻿using ForumPlatform.Forum.Infrastructure.Persistance;
+using ForumPlatform.Reputation.Application.Scoring;
+using ForumPlatform.Reputation.Domain.Entities;
 using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +39,9 @@ namespace ForumPlatform.Forum.Application.CreateThread
 
 			_context.Threads.Add(thread);
 			await _context.SaveChangesAsync(token);
+
+			_backgroundJobClient.Enqueue<ContentScoringJob>(job =>
+				job.Handle(thread.Id, QualityContentType.Thread, thread.Body));
 
 			return new CreateThreadResponse(thread.Id, thread.Title, thread.SubforumId);
 		}

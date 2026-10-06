@@ -16,6 +16,9 @@ namespace ForumPlatform.Forum.Infrastructure.Persistance
 			builder.Property(c => c.ParentCommentId).IsRequired(false); // Null for top-level comments.
 			builder.Property(c => c.Depth).IsRequired();
 			builder.Property(c => c.CreatedAt).IsRequired();
+			builder.Property(t => t.FinalScore)
+				.HasPrecision(5, 4)
+				.HasDefaultValue(0.5m);
 
 			builder.Property<uint>("xmin").HasColumnType("xid").IsRowVersion();
 

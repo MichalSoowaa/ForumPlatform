@@ -17,6 +17,9 @@ using ForumPlatform.Forum.Application.CreateSubforum;
 using ForumPlatform.Forum.Application.CreateComment;
 using ForumPlatform.Forum.Infrastructure;
 using ForumPlatform.API.Endpoints;
+using ForumPlatform.Reputation.Infrastructure;
+using Hangfire;
+using ForumPlatform.Reputation.Application.Scoring;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,8 +47,11 @@ builder.Services.AddValidatorsFromAssembly(typeof(CreateSubforumCommandValidator
 builder.Services.AddValidatorsFromAssembly(typeof(CreateThreadCommandValidator).Assembly);
 builder.Services.AddValidatorsFromAssembly(typeof(CreateCommentCommandValidator).Assembly);
 
+builder.Services.AddReputationInfrastructure(builder.Configuration);
+
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ContentScoreRecalculator>();
 
 var jwtSigningKey = builder.Configuration["Jwt:SigningKey"]
 	?? throw new InvalidOperationException("Missing Jwt:SigningKey configuration.");
@@ -75,6 +81,8 @@ builder.Services.AddAuthorizationBuilder();
 
 var app = builder.Build();
 
+app.UseHangfireDashboard("/hangfire");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -100,5 +108,6 @@ app.MapGet("/health/db", async (UserDbContext db) =>
 
 app.MapForumEndpoints();
 app.MapAuthEndpoints();
+app.MapReputationEndpoints();
 
 app.Run();

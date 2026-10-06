@@ -18,10 +18,12 @@ namespace ForumPlatform.Reputation.Application.Scoring
 	public class ContentScoringJob
 	{
 		private readonly ReputationDbContext _db;
+		private readonly ContentScoreRecalculator _contentScoreRecalculator;
 
-		public ContentScoringJob(ReputationDbContext db)
+		public ContentScoringJob(ReputationDbContext db, ContentScoreRecalculator contentScoreRecalculator)
 		{
 			_db = db;
+			_contentScoreRecalculator = contentScoreRecalculator;
 		}
 
 		public async Task Handle(Guid contentId, QualityContentType contentType, string content)
@@ -49,6 +51,11 @@ namespace ForumPlatform.Reputation.Application.Scoring
 					_db.QualityAssessments.Add(assessment);
 
 				await _db.SaveChangesAsync();
+			}
+
+			if (assessment.Status == QualityAssessmentStatus.HeuristicOnly)
+			{
+				await _contentScoreRecalculator.Recalculate(contentId, contentType, CancellationToken.None);
 			}
 		}
 	}

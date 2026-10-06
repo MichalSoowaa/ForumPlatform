@@ -7,13 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hangfire.Core" Version="1.8.25" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Hangfire.Core" />
+    <PackageReference Include="Newtonsoft.Json" />
+	<PackageReference Include="MediatR" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ForumPlatform.Forum.Infrastructure\ForumPlatform.Forum.Infrastructure.csproj" />
     <ProjectReference Include="..\ForumPlatform.Reputation.Domain\ForumPlatform.Reputation.Domain.csproj" />
     <ProjectReference Include="..\ForumPlatform.Reputation.Infrastructure\ForumPlatform.Reputation.Infrastructure.csproj" />
+    <ProjectReference Include="..\ForumPlatform.Users.Infrastructure\ForumPlatform.Users.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

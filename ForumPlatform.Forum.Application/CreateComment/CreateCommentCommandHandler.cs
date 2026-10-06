@@ -2,21 +2,27 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ForumPlatform.Forum.Domain.Entities;
+using Hangfire;
+using ForumPlatform.Reputation.Application.Scoring;
+using ForumPlatform.Reputation.Domain.Entities;
 
 namespace ForumPlatform.Forum.Application.CreateComment
 {
 	public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, CreateCommandResponse>
 	{
 		private readonly ForumDbContext _context;
+		private readonly IBackgroundJobClient _backgroundJobClient;
 
-		public CreateCommentCommandHandler(ForumDbContext context)
+		public CreateCommentCommandHandler(ForumDbContext context, IBackgroundJobClient backgroundJobClient)
 		{
 			_context = context;
+			_backgroundJobClient = backgroundJobClient;
 		}
 
 		public async Task<CreateCommandResponse> Handle(CreateCommentCommand request, CancellationToken token)
 		{
-			var thread = await _context.Threads.FirstOrDefaultAsync(t => t.Id == request.ThreadId, token);
+			var thread = await 
+				_context.Threads.FirstOrDefaultAsync(t => t.Id == request.ThreadId, token);
 
 			if (thread is null)
 				throw new InvalidOperationException($"Thread {request.ThreadId} does not exist.");
@@ -46,6 +52,9 @@ namespace ForumPlatform.Forum.Application.CreateComment
 
 			thread.RegisterNewComment();
 			await _context.SaveChangesAsync(token);
+
+			_backgroundJobClient.Enqueue<ContentScoringJob>(job =>
+				job.Handle(comment.Id, QualityContentType.Comment, comment.Body));
 
 			return new CreateCommandResponse(comment.Id, comment.ThreadId, comment.ParentCommentId, comment.Depth);
 		}

@@ -18,6 +18,7 @@ namespace ForumPlatform.Forum.Domain.Entities
 		public Guid AuthorId { get; private set; }
 		public int CommentCount { get; private set; }
 		public DateTime LastActivityAt { get; private set; }
+		public decimal FinalScore { get; private set; } = 0.5m; // Neutral prior until assessed/voted on.
 
 		protected Thread() { }
 
@@ -38,6 +39,7 @@ namespace ForumPlatform.Forum.Domain.Entities
 				AuthorId = authorId,
 				CommentCount = 0,
 				LastActivityAt = DateTime.UtcNow,
+				FinalScore = 0.5m,
 			};
 		}
 
@@ -45,6 +47,20 @@ namespace ForumPlatform.Forum.Domain.Entities
 		{
 			CommentCount++;
 			LastActivityAt = DateTime.UtcNow;
+			UpdatedAt = DateTime.UtcNow;
+		}
+
+		/// <summary>
+		/// Overwrites the cached, displayed quality score. Called by the Reputation module's ContentScoreRecalculator.
+		/// </summary>
+		/// <param name="finalScore"></param>
+		/// <exception cref="ArgumentOutOfRangeException"></exception>
+		public void ApplyFinalScore(decimal finalScore)
+		{
+			if (finalScore < 0 || finalScore > 1)
+				throw new ArgumentOutOfRangeException(nameof(finalScore), "Final score must be between 0 and 1.");
+
+			FinalScore = finalScore;
 			UpdatedAt = DateTime.UtcNow;
 		}
 	}

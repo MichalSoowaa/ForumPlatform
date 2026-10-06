@@ -6,6 +6,7 @@ namespace ForumPlatform.Reputation.Infrastructure.Persistence
 	public class ReputationDbContext : DbContext
 	{
 		public DbSet<QualityAssessment> QualityAssessments { get; set; } = null!;
+		public DbSet<Vote> Votes { get; set; } = null!;
 
 		public ReputationDbContext(DbContextOptions<ReputationDbContext> options) : base(options)
 		{
@@ -16,6 +17,7 @@ namespace ForumPlatform.Reputation.Infrastructure.Persistence
 			base.OnModelCreating(modelBuilder);
 
 			modelBuilder.ApplyConfiguration(new QualityAssessmentConfiguration());
+			modelBuilder.ApplyConfiguration(new VoteConfiguration());
 
 			foreach (var entityType in modelBuilder.Model.GetEntityTypes())
 			{
