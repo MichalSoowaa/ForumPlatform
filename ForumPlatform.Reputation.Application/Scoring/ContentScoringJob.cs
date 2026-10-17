@@ -26,7 +26,7 @@ namespace ForumPlatform.Reputation.Application.Scoring
 			_contentScoreRecalculator = contentScoreRecalculator;
 		}
 
-		public async Task Handle(Guid contentId, QualityContentType contentType, string content)
+		public async Task Handle(Guid contentId, ContentType contentType, string content)
 		{
 			var existing = await _db.QualityAssessments.FirstOrDefaultAsync(
 				q => q.ContentId == contentId && q.ContentType == contentType);

@@ -13,16 +13,23 @@ namespace ForumPlatform.API.Endpoints
 			app.MapPost("/votes", async (CastVoteRequest request, ClaimsPrincipal user, IMediator mediator) =>
 			{
 				var command = new CastVoteCommand(user.GetUserId(), request.ContentId, request.ContentType, request.Value);
-				var result = await mediator.Send(command);
 
-				return Results.Ok(result);
+				try
+				{
+					var result = await mediator.Send(command);
+					return Results.Ok(result);
+				}
+				catch (InvalidOperationException ex)
+				{
+					return Results.BadRequest(new { error = ex.Message });
+				}
 			})
 				.WithName("CastVote")
 				.RequireAuthorization()
-				.Produces<CastVoteResponse>(StatusCodes.Status200OK)
+				.Produces(StatusCodes.Status200OK)
 				.Produces(StatusCodes.Status400BadRequest);
 		}
 
-		public record CastVoteRequest(Guid ContentId, QualityContentType ContentType, VoteValue Value);
+		public record CastVoteRequest(Guid ContentId, ContentType ContentType, VoteValue Value);
 	}
 }

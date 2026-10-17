@@ -18,14 +18,17 @@ namespace ForumPlatform.Reputation.Application.Scoring
 	{
 		private readonly ReputationDbContext _reputationDb;
 		private readonly ForumDbContext _forumDb;
+		private readonly AuthorService _authorService;
 
-		public ContentScoreRecalculator(ReputationDbContext reputationDb, ForumDbContext forumDb)
+		public ContentScoreRecalculator(
+			ReputationDbContext reputationDb, ForumDbContext forumDb, AuthorService authorService)
 		{
 			_reputationDb = reputationDb;
 			_forumDb = forumDb;
+			_authorService = authorService;
 		}
 
-		public async Task Recalculate(Guid contentId, QualityContentType contentType, CancellationToken cancellationToken)
+		public async Task Recalculate(Guid contentId, ContentType contentType, CancellationToken cancellationToken)
 		{
 			var votes = await _reputationDb.Votes
 				.Where(v => v.ContentId == contentId && v.ContentType == contentType)
@@ -47,21 +50,41 @@ namespace ForumPlatform.Reputation.Application.Scoring
 
 			var finalScore = FinalScoreCalculator.Calculate(qualityScore, communityScore, votes.Count);
 
+			Guid? authorId = null;
+
 			switch (contentType)
 			{
-				case QualityContentType.Thread:
-					var thread = await _forumDb.Threads.FirstOrDefaultAsync(t => t.Id == contentId, cancellationToken);
-					thread?.ApplyFinalScore(finalScore);
-					break;
-				case QualityContentType.Comment:
-					var comment = await _forumDb.Comments.FirstOrDefaultAsync(c => c.Id == contentId, cancellationToken);
-					comment?.ApplyFinalScore(finalScore);
-					break;
+				case ContentType.Thread:
+					{
+						var thread = await _forumDb.Threads.FirstOrDefaultAsync(t => t.Id == contentId, cancellationToken);
+
+						if (thread != null)
+						{
+							thread.ApplyFinalScore(finalScore);
+							authorId = thread.AuthorId;
+						}
+						break;
+					}
+
+				case ContentType.Comment:
+					{
+						var comment = await _forumDb.Comments.FirstOrDefaultAsync(c => c.Id == contentId, cancellationToken);
+						if (comment != null)
+						{
+							comment.ApplyFinalScore(finalScore);
+							authorId = comment.AuthorId;
+						}	
+						break;
+					}
+
 				default:
 					throw new ArgumentOutOfRangeException(nameof(contentType), $"Unsupported content type: {contentType}");
 			}
 
 			await _forumDb.SaveChangesAsync(cancellationToken);
+
+			if (authorId is not null)
+				await _authorService.RefreshQualityIndicator(authorId.Value, cancellationToken);
 		}
 	}
 }

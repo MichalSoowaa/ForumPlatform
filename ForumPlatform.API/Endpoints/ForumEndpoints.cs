@@ -2,6 +2,10 @@
 using ForumPlatform.Forum.Application.CreateComment;
 using ForumPlatform.Forum.Application.CreateSubforum;
 using ForumPlatform.Forum.Application.CreateThread;
+using ForumPlatform.Forum.Application.GetSubforums;
+using ForumPlatform.Forum.Application.GetThreadDetail;
+using ForumPlatform.Forum.Application.GetThreadsBySubforum;
+using ForumPlatform.Forum.Application.Sorting;
 using MediatR;
 using System.Security.Claims;
 
@@ -72,10 +76,28 @@ namespace ForumPlatform.API.Endpoints
 					return Results.BadRequest(new { error = ex.Message });
 				}
 			})
-				.WithName("CreateComment")
-				.RequireAuthorization()
-				.Produces(StatusCodes.Status201Created)
-				.Produces(StatusCodes.Status400BadRequest);
+			.WithName("CreateComment")
+			.RequireAuthorization()
+			.Produces(StatusCodes.Status201Created)
+			.Produces(StatusCodes.Status400BadRequest);
+
+			app.MapGet("/subforums", async (IMediator mediator) =>
+				Results.Ok(await mediator.Send(new GetSubforumsQuery())))
+			.WithName("GetSubforums");
+
+			app.MapGet("/subforums/{subforumId:guid}/threads",
+				async (Guid subforumId, SortMode? sort, IMediator mediator) =>
+					Results.Ok(await mediator.Send(new GetThreadsBySubforumQuery(subforumId, sort ?? SortMode.Activity))))
+			.WithName("GetThreadsBySubforum");
+
+			app.MapGet("/threads/{threadId:guid}",
+				async (Guid threadId, SortMode? sort, IMediator mediator) =>
+				{
+					var result = await mediator.Send(new GetThreadDetailQuery(threadId, sort ?? SortMode.Quality));
+
+					return result is not null ? Results.Ok(result) : Results.NotFound();
+				})
+			.WithName("GetThreadDetail");
 		}
 	}
 }

@@ -6,7 +6,8 @@ import { ProtectedRoute } from './app/ProtectedRoute';
 import { HomePage } from './app/HomePage';
 import { CreateSubforumPage } from './features/forum/CreateSubforumPage';
 import { CreateThreadPage } from './features/forum/CreateThreadPage';
-import { ThreadCommentPage } from './features/forum/ThreadCommentPage';
+import { ThreadDetailPage } from './features/forum/ThreadDetailPage';
+import { ThreadsPage } from './features/forum/ThreadsPage';
 
 export function App() {
   return (
@@ -15,33 +16,13 @@ export function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/" element={
-            <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
-            }
-          />
-          <Route path="/subforums/new"
-            element={
-              <ProtectedRoute>
-                <CreateSubforumPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/threads/new"
-            element={
-              <ProtectedRoute>
-                <CreateThreadPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/threads/:threadId/comment"
-            element={
-              <ProtectedRoute>
-                <ThreadCommentPage />
-              </ProtectedRoute>
-            }
-          />
+
+          <Route path="/" element={<ProtectedRoute><HomePage/></ProtectedRoute>}/>
+          <Route path="/subforums/new" element={<ProtectedRoute><CreateSubforumPage /></ProtectedRoute>}/>
+          <Route path="/subforums/:subforumId/threads/new" element={<ProtectedRoute><CreateThreadPage /></ProtectedRoute>}/>
+
+          <Route path="/subforums/:subforumId/threads" element={<ProtectedRoute><ThreadsPage /></ProtectedRoute>}/>
+          <Route path="/threads/:threadId" element={<ProtectedRoute><ThreadDetailPage /></ProtectedRoute>}/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>

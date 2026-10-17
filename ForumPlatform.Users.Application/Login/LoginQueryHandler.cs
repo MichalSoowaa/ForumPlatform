@@ -29,7 +29,7 @@ namespace ForumPlatform.Users.Application.Login
 
 			if (!passwordValid)
 			{
-				throw new Exception("Invalid email or password.");
+				throw new UnauthorizedAccessException("Invalid email or password.");
 			}
 
 			var token = _tokenService.GenerateToken(user.Id, user.Email, user.UserName);

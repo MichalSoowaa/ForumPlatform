@@ -13,7 +13,7 @@ namespace ForumPlatform.Users.Infrastructure.Persistance
 			builder.Property(u => u.UserName).IsRequired().HasMaxLength(256);
 			builder.Property(u => u.PasswordHash).IsRequired().HasMaxLength(100);
 			builder.Property(u => u.TotalReputation).HasPrecision(18, 2);
-			builder.Property(u => u.MeritIndicator).HasPrecision(5, 4);
+			builder.Property(u => u.QualityIndicator).HasPrecision(5, 4);
 			builder.Property(u => u.LastActiveAt).IsRequired();
 			builder.Property(u => u.CreatedAt).IsRequired();
 			builder.Property(u => u.UpdatedAt);

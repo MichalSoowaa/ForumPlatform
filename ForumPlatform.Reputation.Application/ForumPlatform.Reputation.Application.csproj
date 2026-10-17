@@ -10,6 +10,7 @@
     <PackageReference Include="Hangfire.Core" />
     <PackageReference Include="Newtonsoft.Json" />
 	<PackageReference Include="MediatR" />
+	<PackageReference Include="FluentValidation" />
   </ItemGroup>
 
   <ItemGroup>

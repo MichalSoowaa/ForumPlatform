@@ -1,19 +1,22 @@
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate, Link } from 'react-router-dom';
-import { createThread } from './forumApi';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { createThread } from './forumapi';
 import { extractErrorMessage } from '../errorMessage';
 
 export function CreateThreadPage() {
+  const { subforumId } = useParams();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ title: '', body: '', subforumId: '' });
+  const [form, setForm] = useState({ title: '', body: '' });
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: createThread,
     onSuccess: (result) => {
-      // No thread-detail page yet — jump straight to the comment form for the
-      // new thread, since that's the next link in the vertical slice.
-      navigate(`/threads/${result.threadId}/comment`);
+      // Make the subforum's thread list refetch so the new thread shows up
+      // when the user navigates back to it.
+      queryClient.invalidateQueries({ queryKey: ['threads', result.subforumId] });
+      navigate(`/threads/${result.threadId}`);
     },
   });
 
@@ -23,28 +26,15 @@ export function CreateThreadPage() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    mutation.mutate(form);
+    console.log('form at submit:', form);
+  console.log('JSON payload:', JSON.stringify({ ...form, subforumId }));
+    mutation.mutate({ ...form, subforumId });
   }
 
   return (
     <div>
       <h1>Create a thread</h1>
-      <p>
-        No subforum list yet — paste the subforum's Id (returned when you created it,
-        or check the database directly for now).
-      </p>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="subforumId">Subforum Id</label>
-          <input
-            id="subforumId"
-            name="subforumId"
-            type="text"
-            value={form.subforumId}
-            onChange={handleChange}
-            required
-          />
-        </div>
         <div>
           <label htmlFor="title">Title</label>
           <input id="title" name="title" type="text" value={form.title} onChange={handleChange} required />
@@ -62,7 +52,7 @@ export function CreateThreadPage() {
       </form>
 
       <p>
-        <Link to="/">Back home</Link>
+        <Link to={`/subforums/${subforumId}/threads`}>Back to threads</Link>
       </p>
     </div>
   );

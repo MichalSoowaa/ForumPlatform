@@ -19,13 +19,19 @@ namespace ForumPlatform.Reputation.Domain.Entities
 	{
 		public Guid VoterId { get; private set; }
 		public Guid ContentId { get; private set; }
-		public QualityContentType ContentType { get; private set; }
+		public ContentType ContentType { get; private set; }
 		public VoteValue Value { get; private set; }
 		public decimal WeightAtCast { get; private set; }
 
+		/// <summary>
+		/// This vote's contribution to its content author's TotalReputation,
+		/// taking into account the vote's value (upvote or downvote) and the voter's weight at the time of casting.
+		/// </summary>
+		public decimal SignedWeight => (int)Value * WeightAtCast;
+
 		protected Vote() { } // For EF Core
 
-		public static Vote Cast(Guid voterId, Guid contentId, QualityContentType contentType, VoteValue value, decimal weightAtCast)
+		public static Vote Cast(Guid voterId, Guid contentId, ContentType contentType, VoteValue value, decimal weightAtCast)
 		{
 			if (weightAtCast <= 0)
 				throw new ArgumentException("Weight at cast must be positive.", nameof(weightAtCast));

@@ -54,7 +54,7 @@ namespace ForumPlatform.Forum.Application.CreateComment
 			await _context.SaveChangesAsync(token);
 
 			_backgroundJobClient.Enqueue<ContentScoringJob>(job =>
-				job.Handle(comment.Id, QualityContentType.Comment, comment.Body));
+				job.Handle(comment.Id, ContentType.Comment, comment.Body));
 
 			return new CreateCommandResponse(comment.Id, comment.ThreadId, comment.ParentCommentId, comment.Depth);
 		}

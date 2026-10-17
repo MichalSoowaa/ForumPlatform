@@ -21,7 +21,7 @@ namespace ForumPlatform.Users.Domain.Entities
 			/// 
 			/// Scale: 0–1 (same as individual post scores).
 			/// </summary>
-			public decimal MeritIndicator { get; private set; }
+			public decimal QualityIndicator { get; private set; }
 
 			public DateTime LastActiveAt { get; private set; }
 
@@ -58,24 +58,24 @@ namespace ForumPlatform.Users.Domain.Entities
 					Email = email.ToLower(),
 					UserName = username,
 					TotalReputation = 0,
-					MeritIndicator = 0.5m,
+					QualityIndicator = 0.5m,
 					LastActiveAt = DateTime.UtcNow
 				};
 			}
 
-			public void AddReputation(decimal amount)
+			public void AddReputation(decimal delta)
 			{
-				TotalReputation += amount;
-				LastActiveAt = DateTime.UtcNow;
+				TotalReputation += delta;
+				UpdatedAt = DateTime.UtcNow;
 			}
 
-			public void SetMeritIndicator(decimal merit)
+			public void SetQualityIndicator(decimal value)
 			{
-				if (merit < 0 || merit > 1)
-					throw new ArgumentOutOfRangeException(nameof(merit), "Merit indicator must be between 0 and 1.");
+				if (value < 0 || value > 1)
+					throw new ArgumentOutOfRangeException(nameof(value), "Quality indicator must be between 0 and 1.");
 
-				MeritIndicator = merit;
-				UpdateLastActive();
+				QualityIndicator = value;
+				UpdatedAt = DateTime.UtcNow;
 			}
 
 			public void UpdateLastActive()

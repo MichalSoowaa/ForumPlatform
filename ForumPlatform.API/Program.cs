@@ -20,6 +20,8 @@ using ForumPlatform.API.Endpoints;
 using ForumPlatform.Reputation.Infrastructure;
 using Hangfire;
 using ForumPlatform.Reputation.Application.Scoring;
+using System.Text.Json.Serialization;
+using ForumPlatform.Reputation.Application.CastVote;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,11 @@ builder.Host.UseSerilog((context, configuration) =>
 		.ReadFrom.Configuration(context.Configuration)
 		.Enrich.FromLogContext()
 		.WriteTo.Console());
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+	options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddOpenApi();
 builder.Services.AddMediatR(cfg =>
@@ -48,10 +55,13 @@ builder.Services.AddValidatorsFromAssembly(typeof(CreateThreadCommandValidator).
 builder.Services.AddValidatorsFromAssembly(typeof(CreateCommentCommandValidator).Assembly);
 
 builder.Services.AddReputationInfrastructure(builder.Configuration);
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CastVoteCommand).Assembly));
+builder.Services.AddValidatorsFromAssembly(typeof(CastVoteCommandValidator).Assembly);
 
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ContentScoreRecalculator>();
+builder.Services.AddScoped<AuthorService>();
 
 var jwtSigningKey = builder.Configuration["Jwt:SigningKey"]
 	?? throw new InvalidOperationException("Missing Jwt:SigningKey configuration.");

@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate, Link } from 'react-router-dom';
-import { createSubforum } from './forumApi';
+import { createSubforum } from './forumapi';
 import { extractErrorMessage } from '../errorMessage';
 
 export function CreateSubforumPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', description: '' });
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: createSubforum,
     onSuccess: (result) => {
-      // No subforum-detail page yet — land back on home with a note in the URL
-      // state until the Forum browsing UI exists.
+      queryClient.invalidateQueries({ queryKey: ['subforums'] });
       navigate('/', { state: { message: `Subforum "${result.name}" created (status: ${result.status}).` } });
     },
   });

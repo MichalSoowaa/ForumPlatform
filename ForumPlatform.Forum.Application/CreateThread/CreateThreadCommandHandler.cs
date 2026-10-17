@@ -41,7 +41,7 @@ namespace ForumPlatform.Forum.Application.CreateThread
 			await _context.SaveChangesAsync(token);
 
 			_backgroundJobClient.Enqueue<ContentScoringJob>(job =>
-				job.Handle(thread.Id, QualityContentType.Thread, thread.Body));
+				job.Handle(thread.Id, ContentType.Thread, thread.Body));
 
 			return new CreateThreadResponse(thread.Id, thread.Title, thread.SubforumId);
 		}

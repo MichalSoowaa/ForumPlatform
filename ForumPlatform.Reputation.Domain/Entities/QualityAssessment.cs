@@ -11,7 +11,7 @@ namespace ForumPlatform.Reputation.Domain.Entities
 		Failed
 	}
 
-	public enum QualityContentType
+	public enum ContentType
 	{
 		Thread,
 		Comment
@@ -23,7 +23,7 @@ namespace ForumPlatform.Reputation.Domain.Entities
 	public class QualityAssessment : Entity<Guid>
 	{
 		public Guid ContentId { get; private set; }
-		public QualityContentType ContentType { get; private set; }
+		public ContentType ContentType { get; private set; }
 		public decimal HeuristicScore { get; private set; }
 		public decimal? LlmVerdict { get; private set; }
 		public string? LlmJustification { get; private set; }
@@ -33,7 +33,7 @@ namespace ForumPlatform.Reputation.Domain.Entities
 
 		private QualityAssessment() { }
 
-		public static QualityAssessment CreatePending(Guid contentId, QualityContentType contentType)
+		public static QualityAssessment CreatePending(Guid contentId, ContentType contentType)
 		{
 			return new QualityAssessment
 			{
