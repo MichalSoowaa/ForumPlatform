@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getSubforums } from '../features/forum/forumapi';
 
 export function HomePage() {
-    const { user, logout } = useAuth();
+    const { user, logout, isModerator } = useAuth();
     const location = useLocation();
     const flashMessage = location.state?.message;
 
@@ -24,8 +24,19 @@ export function HomePage() {
             
             {flashMessage && <p role="status">{flashMessage}</p>}
 
+            <nav>
+                <Link to="/subforums/new">Propose a subforum</Link>
+                {' · '}
+                <Link to="/subforums/mine">My proposals</Link>
+                {isModerator && (
+                    <>
+                        {' · '}
+                        <Link to="/moderation/subforums/pending">Moderation queue</Link>
+                    </>
+                )}
+            </nav>
+
             <h1>Subforums</h1>
-            <p><Link to="/subforums/new">Propose a subforum</Link></p>
 
             {isLoading && <p>Loading subforums...</p>}
             {isError && <p role="alert">Failed to load subforums.</p>}
@@ -37,6 +48,7 @@ export function HomePage() {
                     {subforums.map((subforum) => (
                         <li key={subforum.id}>
                             <Link to={`/subforums/${subforum.id}/threads`}>{subforum.name}</Link>
+                            {subforum.tags.length > 0 && <small>[{subforum.tags.join(', ')}]</small>}
                             <p>{subforum.description}</p>
                         </li>
                     ))}

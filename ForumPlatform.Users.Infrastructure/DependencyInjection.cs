@@ -30,6 +30,7 @@ namespace ForumPlatform.Users.Infrastructure
 				options.Password.RequireNonAlphanumeric = false;
 				options.Password.RequiredLength = 8;
 			})
+				.AddRoles<IdentityRole<Guid>>()
 				.AddEntityFrameworkStores<UserDbContext>();
 
 			return services;

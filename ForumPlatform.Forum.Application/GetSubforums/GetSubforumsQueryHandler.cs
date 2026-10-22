@@ -16,8 +16,9 @@ namespace ForumPlatform.Forum.Application.GetSubforums
 		public async Task<List<SubforumSummary>> Handle(GetSubforumsQuery request, CancellationToken cancellationToken)
 		{
 			return await _db.Subforums
+				.Where(s => s.Status == Domain.Entities.SubforumStatus.Approved)
 				.OrderBy(s => s.Name)
-				.Select(s => new SubforumSummary(s.Id, s.Name, s.Description, s.Status.ToString()))
+				.Select(s => new SubforumSummary(s.Id, s.Name, s.Description, s.Tags))
 				.ToListAsync(cancellationToken);
 		}
 	}

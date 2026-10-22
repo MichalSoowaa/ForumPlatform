@@ -2,6 +2,7 @@
 using ForumPlatform.Forum.Application.CreateComment;
 using ForumPlatform.Forum.Application.CreateSubforum;
 using ForumPlatform.Forum.Application.CreateThread;
+using ForumPlatform.Forum.Application.GetMySubforums;
 using ForumPlatform.Forum.Application.GetSubforums;
 using ForumPlatform.Forum.Application.GetThreadDetail;
 using ForumPlatform.Forum.Application.GetThreadsBySubforum;
@@ -98,6 +99,11 @@ namespace ForumPlatform.API.Endpoints
 					return result is not null ? Results.Ok(result) : Results.NotFound();
 				})
 			.WithName("GetThreadDetail");
+
+			app.MapGet("/subforums/mine", async (ClaimsPrincipal user, IMediator mediator) =>
+				Results.Ok(await mediator.Send(new GetMySubforumsQuery(user.GetUserId()))))
+				.WithName("GetMySubforums")
+				.RequireAuthorization();
 		}
 	}
 }

@@ -19,24 +19,21 @@
 		<PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
 		<PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" />
 		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12" />
-
 		<PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.12" />
 		<PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.12" />
-
-		<PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
-
+		<PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.13" />
 		<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
 		<PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12" />
 		<PackageVersion Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+		<PackageVersion Include="Microsoft.OpenApi" Version="2.12.0" />
+		<PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.19.2" />
+
+		<PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
 
 		<PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
 
-		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
-		<PackageVersion Include="Microsoft.OpenApi" Version="2.12.0" />
-
 		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.19.2" />
-
-		<PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.19.2" />
 
 		<PackageVersion Include="Pgvector" Version="0.3.2" />
 		<PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.3.0" />

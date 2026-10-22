@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, Link } from 'react-router-dom';
 import { createSubforum } from './forumapi';
-import { extractErrorMessage } from '../errorMessage';
+import { extractErrorMessage } from '../errormessage';
 
 export function CreateSubforumPage() {
   const navigate = useNavigate();
@@ -11,9 +11,9 @@ export function CreateSubforumPage() {
 
   const mutation = useMutation({
     mutationFn: createSubforum,
-    onSuccess: (result) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subforums'] });
-      navigate('/', { state: { message: `Subforum "${result.name}" created (status: ${result.status}).` } });
+      navigate('/subforums/mine', { state: { message: 'Proposal submitted successfully. A moderator will review it.' } });
     },
   });
 

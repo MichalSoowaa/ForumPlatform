@@ -32,8 +32,11 @@ namespace ForumPlatform.Users.Application.Login
 				throw new UnauthorizedAccessException("Invalid email or password.");
 			}
 
-			var token = _tokenService.GenerateToken(user.Id, user.Email, user.UserName);
-			return new LoginResponse(user.Id, user.Email, user.UserName, token);
+
+			var roles = await _userManager.GetRolesAsync(user);
+			var token = _tokenService.GenerateToken(user.Id, user.Email, user.UserName, roles);
+
+			return new LoginResponse(user.Id, user.Email, user.UserName, token, roles.ToList());
 		}
 	}
 }

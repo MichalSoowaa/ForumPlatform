@@ -39,9 +39,9 @@ namespace ForumPlatform.Users.Application.Register
 				throw new Exception($"Failed to create user: {errors}");
 			}
 
-			var token = _tokenService.GenerateToken(user.Id, user.Email, user.UserName);
+			var token = _tokenService.GenerateToken(user.Id, user.Email, user.UserName, Array.Empty<string>());
 
-			return new RegisterUserResponse(user.Id, user.Email, user.UserName, token);
+			return new RegisterUserResponse(user.Id, user.Email!, user.UserName!, token);
 		}
 	}
 }

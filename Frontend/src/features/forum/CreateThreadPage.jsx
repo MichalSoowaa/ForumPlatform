@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { createThread } from './forumapi';
-import { extractErrorMessage } from '../errorMessage';
+import { extractErrorMessage } from '../errormessage';
 
 export function CreateThreadPage() {
   const { subforumId } = useParams();

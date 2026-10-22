@@ -18,7 +18,7 @@ namespace ForumPlatform.Forum.Application.CreateSubforum
 		{
 			// Name uniqueness is also enforced at the DB level (filtered unique index),
 			// but checking here first gives a clean 400 instead of an unhandled DBUpdateException bubbling as a 500.
-			var nameTaken = await _context.Subforums.AnyAsync(s => s.Name == request.Name, token);
+			var nameTaken = await _context.Subforums.AnyAsync(s => s.Name == request.Name && s.Status != SubforumStatus.Rejected, token);
 
 			if (nameTaken)
 				throw new InvalidOperationException($"A subforum named '{request.Name}' already exists.");

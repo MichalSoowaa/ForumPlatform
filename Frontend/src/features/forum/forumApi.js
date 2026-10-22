@@ -34,3 +34,23 @@ export async function getThreadDetail(threadId, sort) {
     const { data } = await apiClient.get(`/threads/${threadId}`, { params: { sort } });
     return data;
 }
+
+export async function getMySubforums() {
+    const { data } = await apiClient.get('/subforums/mine');
+    return data;
+}
+
+export async function getPendingSubforums() {
+  const { data } = await apiClient.get('/moderation/subforums/pending');
+  return data;
+}
+
+export async function approveSubforum({ subforumId, tags }) {
+  const { data } = await apiClient.post(`/moderation/subforums/${subforumId}/approve`, { tags });
+  return data;
+}
+
+export async function rejectSubforum({ subforumId, reason }) {
+  const { data } = await apiClient.post(`/moderation/subforums/${subforumId}/reject`, { reason });
+  return data;
+}

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useParams, Link } from 'react-router-dom';
 import { getThreadDetail, createComment } from './forumapi';
 import { VoteButtons } from '../reputation/VoteButtons';
-import { extractErrorMessage } from '../errorMessage';
+import { extractErrorMessage } from '../errormessage';
 import { useAuth } from '../auth/AuthContext';
 import { formatScore } from './formatScore';
 import { SortSelect } from './SortSelect';

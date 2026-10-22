@@ -21,6 +21,14 @@ namespace ForumPlatform.Forum.Infrastructure.Persistance
 			builder.Property(s => s.CreatedByUserId).IsRequired();
 			builder.Property(s => s.CreatedAt).IsRequired();
 
+			builder.Property(s => s.Tags)
+				.HasColumnType("text[]")
+				.HasDefaultValueSql("'{}'"); // existing rows get an empty array instead of failing the migration
+
+			builder.Property(s => s.ReviewedByUserId);
+			builder.Property(s => s.ReviewedAt);
+			builder.Property(s => s.RejectionReason).HasMaxLength(500);
+
 			builder.Property<uint>("xmin").HasColumnType("xid").IsRowVersion();
 
 			// Name must be unique among non-deleted, non-rejected subforums.

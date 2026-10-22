@@ -22,6 +22,7 @@ using Hangfire;
 using ForumPlatform.Reputation.Application.Scoring;
 using System.Text.Json.Serialization;
 using ForumPlatform.Reputation.Application.CastVote;
+using ForumPlatform.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,37 +88,50 @@ builder.Services
 		};
 	});
 
-builder.Services.AddAuthorizationBuilder();
+builder.Services.AddAuthorizationBuilder().AddPolicy(AuthPolicies.Moderator, policy => policy.RequireRole(Roles.Moderator));
 
 var app = builder.Build();
 
-app.UseHangfireDashboard("/hangfire");
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-	app.MapOpenApi();
+	try
+	{
+		await ModeratorSeeder.SeedAsync(scope.ServiceProvider, app.Configuration, app.Logger);
+	}
+	catch (Exception ex)
+	{
+		app.Logger.LogError(ex, "An error occurred while seeding the moderator role.");
+	}
 }
 
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseMiddleware<GlobalExceptionMiddleware>();
+	app.UseHangfireDashboard("/hangfire");
 
-app.MapGet("/", () => Results.Ok(new { service = "ForumPlatform.WebApi", status = "running" }))
-	.WithName("Root");
+	// Configure the HTTP request pipeline.
+	if (app.Environment.IsDevelopment())
+	{
+		app.MapOpenApi();
+	}
 
-app.MapGet("/health/db", async (UserDbContext db) =>
-{
-	var canConnect = await db.Database.CanConnectAsync();
-	return canConnect
-		? Results.Ok(new { database = "reachable" })
-		: Results.Problem("Database is not reachable.", statusCode: 503);
-})
-	.WithName("HealthDb");
+	app.UseHttpsRedirection();
+	app.UseAuthentication();
+	app.UseAuthorization();
+	app.UseMiddleware<GlobalExceptionMiddleware>();
 
-app.MapForumEndpoints();
-app.MapAuthEndpoints();
-app.MapReputationEndpoints();
+	app.MapGet("/", () => Results.Ok(new { service = "ForumPlatform.WebApi", status = "running" }))
+		.WithName("Root");
 
-app.Run();
+	app.MapGet("/health/db", async (UserDbContext db) =>
+	{
+		var canConnect = await db.Database.CanConnectAsync();
+		return canConnect
+			? Results.Ok(new { database = "reachable" })
+			: Results.Problem("Database is not reachable.", statusCode: 503);
+	})
+		.WithName("HealthDb");
+
+	app.MapForumEndpoints();
+	app.MapAuthEndpoints();
+	app.MapReputationEndpoints();
+	app.MapModerationEndpoints();
+
+	app.Run();

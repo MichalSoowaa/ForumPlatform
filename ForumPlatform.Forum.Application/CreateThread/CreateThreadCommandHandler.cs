@@ -1,9 +1,11 @@
-﻿using ForumPlatform.Forum.Infrastructure.Persistance;
+﻿using ForumPlatform.Forum.Domain.Entities;
+using ForumPlatform.Forum.Infrastructure.Persistance;
 using ForumPlatform.Reputation.Application.Scoring;
 using ForumPlatform.Reputation.Domain.Entities;
 using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
 using Th = ForumPlatform.Forum.Domain.Entities.Thread;
 
 namespace ForumPlatform.Forum.Application.CreateThread
@@ -23,17 +25,16 @@ namespace ForumPlatform.Forum.Application.CreateThread
 		public async Task<CreateThreadResponse> Handle(
 			CreateThreadCommand request, CancellationToken token)
 		{
-			var subforumExists = await 
-				_context.Subforums.AnyAsync(s => s.Id == request.SubforumId, token);
-
-			if (!subforumExists)
+			var subforum = await _context.Subforums
+				.Where(s => s.Id == request.SubforumId)
+				.Select(s => new { s.Status })
+				.FirstOrDefaultAsync(token);
+				
+			if (subforum is null)
 				throw new InvalidOperationException($"Subforum {request.SubforumId} does not exist.");
 
-			// NOTE — deliberate scoped simplification: not checking Subforum.Status here.
-			// Per the Week 1-4 plan, moderator approval doesn't exist yet, so requiring
-			// Status == Approved would make it impossible to ever create a thread until
-			// Week 4 ships. Revisit once the approval workflow exists — this check
-			// should be added back in then.
+			if (subforum.Status != SubforumStatus.Approved)
+				throw new InvalidOperationException("Threads can only be created in approved subforums.");
 
 			var thread = Th.Create(request.Title, request.Body, request.SubforumId, request.AuthorId);
 

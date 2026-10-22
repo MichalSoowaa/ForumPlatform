@@ -39,6 +39,7 @@ export function AuthProvider({ children }) {
             userId: response.userId,
             email: response.email,
             username: response.username,
+            roles: response.roles ?? [], // register responses carry no roles
         };
 
         persistSession(response.token, nextUser);
@@ -71,6 +72,7 @@ export function AuthProvider({ children }) {
         registerStatus: registerMutation.status,
         registerError: registerMutation.error,
         logout,
+        isModerator: Boolean(user?.roles?.includes('Moderator')),
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

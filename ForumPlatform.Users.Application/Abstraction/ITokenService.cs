@@ -6,6 +6,6 @@ namespace ForumPlatform.Users.Application.Abstraction
 {
 	public interface ITokenService
 	{
-		string GenerateToken(Guid userId, string email, string username);
+		string GenerateToken(Guid userId, string email, string username, IEnumerable<string> roles);
 	}
 }
