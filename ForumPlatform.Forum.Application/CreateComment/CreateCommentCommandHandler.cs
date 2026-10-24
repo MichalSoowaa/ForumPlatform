@@ -5,6 +5,8 @@ using ForumPlatform.Forum.Domain.Entities;
 using Hangfire;
 using ForumPlatform.Reputation.Application.Scoring;
 using ForumPlatform.Reputation.Domain.Entities;
+using ForumPlatform.Forum.Application.Search;
+using ForumPlatform.Forum.Infrastructure.Search;
 
 namespace ForumPlatform.Forum.Application.CreateComment
 {
@@ -55,6 +57,9 @@ namespace ForumPlatform.Forum.Application.CreateComment
 
 			_backgroundJobClient.Enqueue<ContentScoringJob>(job =>
 				job.Handle(comment.Id, ContentType.Comment, comment.Body));
+
+			_backgroundJobClient.Enqueue<EmbedContentJob>(job =>
+				job.Handle(thread.Id, EmbeddingContentType.Comment));
 
 			return new CreateCommandResponse(comment.Id, comment.ThreadId, comment.ParentCommentId, comment.Depth);
 		}

@@ -1,5 +1,7 @@
-﻿using ForumPlatform.Forum.Domain.Entities;
+﻿using ForumPlatform.Forum.Application.Search;
+using ForumPlatform.Forum.Domain.Entities;
 using ForumPlatform.Forum.Infrastructure.Persistance;
+using ForumPlatform.Forum.Infrastructure.Search;
 using ForumPlatform.Reputation.Application.Scoring;
 using ForumPlatform.Reputation.Domain.Entities;
 using Hangfire;
@@ -43,6 +45,9 @@ namespace ForumPlatform.Forum.Application.CreateThread
 
 			_backgroundJobClient.Enqueue<ContentScoringJob>(job =>
 				job.Handle(thread.Id, ContentType.Thread, thread.Body));
+
+			_backgroundJobClient.Enqueue<EmbedContentJob>(job =>
+				job.Handle(thread.Id, EmbeddingContentType.Thread));
 
 			return new CreateThreadResponse(thread.Id, thread.Title, thread.SubforumId);
 		}

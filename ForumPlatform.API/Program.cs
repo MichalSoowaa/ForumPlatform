@@ -23,6 +23,7 @@ using ForumPlatform.Reputation.Application.Scoring;
 using System.Text.Json.Serialization;
 using ForumPlatform.Reputation.Application.CastVote;
 using ForumPlatform.Shared;
+using ForumPlatform.Forum.Application.Search;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,8 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ContentScoreRecalculator>();
 builder.Services.AddScoped<AuthorService>();
 
+builder.Services.AddScoped<ContentEmbeddingService>();
+
 var jwtSigningKey = builder.Configuration["Jwt:SigningKey"]
 	?? throw new InvalidOperationException("Missing Jwt:SigningKey configuration.");
 var jwtIssuer = builder.Configuration["Jwt:Issuer"]
@@ -104,16 +107,19 @@ using (var scope = app.Services.CreateScope())
 	}
 }
 
-	app.UseHangfireDashboard("/hangfire");
+app.Services.GetRequiredService<IRecurringJobManager>().AddOrUpdate<EmbeddingSweepJob>(
+	"embedding-sweep", job => job.Run(), "*/10 * * * *");
 
-	// Configure the HTTP request pipeline.
-	if (app.Environment.IsDevelopment())
-	{
-		app.MapOpenApi();
-	}
+app.UseHangfireDashboard("/hangfire");
 
-	app.UseHttpsRedirection();
-	app.UseAuthentication();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+	app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
 	app.UseAuthorization();
 	app.UseMiddleware<GlobalExceptionMiddleware>();
 

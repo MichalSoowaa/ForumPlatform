@@ -1,4 +1,6 @@
 ﻿using ForumPlatform.Forum.Domain.Entities;
+using ForumPlatform.Forum.Infrastructure.Persistence;
+using ForumPlatform.Forum.Infrastructure.Search;
 using Microsoft.EntityFrameworkCore;
 
 namespace ForumPlatform.Forum.Infrastructure.Persistance
@@ -12,6 +14,7 @@ namespace ForumPlatform.Forum.Infrastructure.Persistance
 		public DbSet<Subforum> Subforums { get; set; } = null!;
 		public DbSet<ForumPlatform.Forum.Domain.Entities.Thread> Threads { get; set; } = null!;
 		public DbSet<Comment> Comments { get; set; } = null!;
+		public DbSet<ContentEmbedding> ContentEmbeddings { get; set; } = null!;
 
 		public ForumDbContext(DbContextOptions<ForumDbContext> options) : base(options)
 		{
@@ -20,6 +23,9 @@ namespace ForumPlatform.Forum.Infrastructure.Persistance
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+
+			modelBuilder.HasPostgresExtension("vector");
+			modelBuilder.ApplyConfiguration(new ContentEmbeddingConfiguration());
 			modelBuilder.ApplyConfigurationsFromAssembly(typeof(ForumDbContext).Assembly);
 		}
 	}
