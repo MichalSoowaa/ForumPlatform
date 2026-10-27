@@ -24,6 +24,7 @@ using System.Text.Json.Serialization;
 using ForumPlatform.Reputation.Application.CastVote;
 using ForumPlatform.Shared;
 using ForumPlatform.Forum.Application.Search;
+using ForumPlatform.Forum.Infrastructure.Search;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +67,8 @@ builder.Services.AddScoped<ContentScoreRecalculator>();
 builder.Services.AddScoped<AuthorService>();
 
 builder.Services.AddScoped<ContentEmbeddingService>();
+builder.Services.AddScoped<HybridThreadSearcher>();
+builder.Services.AddScoped<ThreadHitLoader>();
 
 var jwtSigningKey = builder.Configuration["Jwt:SigningKey"]
 	?? throw new InvalidOperationException("Missing Jwt:SigningKey configuration.");
@@ -139,5 +142,6 @@ app.UseAuthentication();
 	app.MapAuthEndpoints();
 	app.MapReputationEndpoints();
 	app.MapModerationEndpoints();
+	app.MapSearchEndpoints();
 
 	app.Run();

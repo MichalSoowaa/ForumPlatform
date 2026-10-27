@@ -54,3 +54,13 @@ export async function rejectSubforum({ subforumId, reason }) {
   const { data } = await apiClient.post(`/moderation/subforums/${subforumId}/reject`, { reason });
   return data;
 }
+
+export async function searchThreads(q) {
+  const { data } = await apiClient.get('/search', { params: { q } });
+  return data;
+}
+
+export async function findSimilarThreads({ title, body }) {
+  const { data } = await apiClient.post('/threads/similar', { title, body });
+  return data;
+}

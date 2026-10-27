@@ -11,6 +11,7 @@ import { ThreadsPage } from './features/forum/ThreadsPage';
 import { MyProposalsPage } from './features/forum/MyProposalsPage';
 import { ModeratorRoute } from './app/ModeratorRoute';
 import { ModerationQueuePage } from './features/forum/ModerationQueuePage';
+import { SearchPage } from './features/forum/SearchPage';
 
 export function App() {
   return (
@@ -29,6 +30,7 @@ export function App() {
 
           <Route path="/subforums/mine" element={<ProtectedRoute><MyProposalsPage /></ProtectedRoute>} />
           <Route path="/moderation/subforums/pending" element={<ModeratorRoute><ModerationQueuePage /></ModeratorRoute>} />
+          <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
