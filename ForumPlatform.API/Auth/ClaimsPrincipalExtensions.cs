@@ -12,5 +12,12 @@ namespace ForumPlatform.API.Auth
 
 			return Guid.Parse(idClaim);
 		}
+
+		// For endpoints that work for anonymous visitors but add personal data when logged in.
+		public static Guid? TryGetUserId(this ClaimsPrincipal user)
+		{
+			var claim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			return Guid.TryParse(claim, out var id) ? id : null;
+		}
 	}
 }

@@ -32,6 +32,10 @@ export function ThreadsPage() {
                         {' - by '}{thread.author} [{formatScore(thread.authorReputation, 1)}] ({thread.createdAt})
                         {' - score '}{formatScore(thread.score, 3)}
                         {' - '}{thread.commentCount}{' comments'}
+                        {thread.newCommentCount === null
+                            ? <strong> · unread</strong>
+                            : thread.newCommentCount > 0 &&
+                                <strong> · +{thread.newCommentCount} new</strong>}
                     </li>
                 ))}
             </ul>

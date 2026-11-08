@@ -64,3 +64,8 @@ export async function findSimilarThreads({ title, body }) {
   const { data } = await apiClient.post('/threads/similar', { title, body });
   return data;
 }
+
+export async function recordThreadVisit(threadId) {
+  const { data } = await apiClient.post(`/threads/${threadId}/visit`);
+  return data; // { baselineAt }
+}

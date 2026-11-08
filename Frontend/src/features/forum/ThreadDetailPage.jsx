@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
-import { getThreadDetail, createComment } from './forumapi';
+import { getThreadDetail, createComment, recordThreadVisit } from './forumapi';
 import { VoteButtons } from '../reputation/VoteButtons';
-import { extractErrorMessage } from '../errormessage';
+import { extractErrorMessage } from '../errorMessage';
 import { useAuth } from '../auth/AuthContext';
 import { formatScore } from './formatScore';
 import { SortSelect } from './SortSelect';
@@ -24,6 +24,30 @@ export function ThreadDetailPage() {
 
   const [body, setBody] = useState('');
   const [replyingTo, setReplyingTo] = useState(null); // { commentId, depth } | null
+
+  const [baselineAt, setBaselineAt] = useState(null);
+  const recordedFor = useRef(null);
+
+  useEffect(() => {
+    // React StrictMode runs effects twice in development; the ref keeps this to one request.
+    if (recordedFor.current === threadId)
+      return;
+
+    recordedFor.current = threadId;
+    setBaselineAt(null);
+
+    recordThreadVisit(threadId)
+      .then((result) => {
+        if (recordedFor.current !== threadId) // the user already moved to another thread
+          return;
+
+        setBaselineAt(new Date(result.baselineAt));
+        queryClient.invalidateQueries({ queryKey: ['threads'] }); // list badges just changed
+      })
+      .catch(() => {}); // best effort: a failure only means no highlighting
+    }, [threadId, queryClient]);
+
+
 
   function refreshScores() {
     queryClient.invalidateQueries({ queryKey: ['thread', threadId] });
@@ -55,7 +79,18 @@ export function ThreadDetailPage() {
     return (
       <p role="alert">Failed to load thread: {extractErrorMessage(error)}</p>
     );
-  } 
+  }
+  
+  // Server timestamps on both sides, so the user's clock never matters.
+  const isNew = (c) =>
+    baselineAt !== null && !isOwn(c.author) && new Date(c.createdAt) > baselineAt;
+
+  const newComments = thread.comments.filter(isNew);
+  const firstNew = [...newComments].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))[0];
+
+  function jumpToFirstNew() {
+    document.getElementById(`comment-${firstNew.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center'});
+  }
 
   const comments = thread.comments ?? [];
   const topLevelComments = thread.comments.filter((c) => c.depth === 0);
@@ -72,11 +107,17 @@ export function ThreadDetailPage() {
       <p>{thread.content}</p>
 
       <h2>Comments</h2>
+        {newComments.length > 0 && (
+          <p role="status">
+            {newComments.length} new {newComments.length === 1 ? 'comment' : 'comments'} since your last visit{' '}
+            <button type="button" onClick={jumpToFirstNew}>Jump to first new</button>
+          </p>
+        )}
       <SortSelect value={sort} onChange={setSort} />
       <ul>
         {topLevelComments.map((c) => (
-          <li key={c.id}>
-            <p>{c.author} [{formatScore(c.authorReputation, 1)}]: {c.content} <small>(score {c.finalScore.toFixed(2)})</small></p>
+          <li key={c.id} id={`comment-${c.id}`}>
+            <p>{c.author} [{formatScore(c.authorReputation, 1)}]{isNew(c) && <> <mark>New</mark></>}: {c.content} <small>(score {c.finalScore.toFixed(2)})</small></p>
             {!isOwn(c.author) && (
               <VoteButtons contentId={c.id} contentType="Comment" onVoted={refreshScores} />
             )}

@@ -15,6 +15,7 @@ namespace ForumPlatform.Forum.Infrastructure.Persistance
 		public DbSet<ForumPlatform.Forum.Domain.Entities.Thread> Threads { get; set; } = null!;
 		public DbSet<Comment> Comments { get; set; } = null!;
 		public DbSet<ContentEmbedding> ContentEmbeddings { get; set; } = null!;
+		public DbSet<ThreadVisit> ThreadVisits { get; set; } = null!;
 
 		public ForumDbContext(DbContextOptions<ForumDbContext> options) : base(options)
 		{
@@ -26,6 +27,7 @@ namespace ForumPlatform.Forum.Infrastructure.Persistance
 
 			modelBuilder.HasPostgresExtension("vector");
 			modelBuilder.ApplyConfiguration(new ContentEmbeddingConfiguration());
+			modelBuilder.ApplyConfiguration(new ThreadVisitConfiguration());
 			modelBuilder.ApplyConfigurationsFromAssembly(typeof(ForumDbContext).Assembly);
 		}
 	}

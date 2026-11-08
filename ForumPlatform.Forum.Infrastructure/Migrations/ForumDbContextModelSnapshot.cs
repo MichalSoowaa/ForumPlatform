@@ -204,6 +204,40 @@ namespace ForumPlatform.Forum.Infrastructure.Migrations
                     b.ToTable("Threads", (string)null);
                 });
 
+            modelBuilder.Entity("ForumPlatform.Forum.Domain.Entities.ThreadVisit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("LastVisitedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("SessionBaselineAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ThreadId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ThreadId");
+
+                    b.HasIndex("UserId", "ThreadId")
+                        .IsUnique();
+
+                    b.ToTable("ThreadVisits", (string)null);
+                });
+
             modelBuilder.Entity("ForumPlatform.Forum.Infrastructure.Search.ContentEmbedding", b =>
                 {
                     b.Property<Guid>("Id")
@@ -263,6 +297,15 @@ namespace ForumPlatform.Forum.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("SubforumId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ForumPlatform.Forum.Domain.Entities.ThreadVisit", b =>
+                {
+                    b.HasOne("ForumPlatform.Forum.Domain.Entities.Thread", null)
+                        .WithMany()
+                        .HasForeignKey("ThreadId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

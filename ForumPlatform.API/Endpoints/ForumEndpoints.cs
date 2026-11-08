@@ -6,6 +6,7 @@ using ForumPlatform.Forum.Application.GetMySubforums;
 using ForumPlatform.Forum.Application.GetSubforums;
 using ForumPlatform.Forum.Application.GetThreadDetail;
 using ForumPlatform.Forum.Application.GetThreadsBySubforum;
+using ForumPlatform.Forum.Application.RecordThreadVisit;
 using ForumPlatform.Forum.Application.Sorting;
 using MediatR;
 using System.Security.Claims;
@@ -87,8 +88,8 @@ namespace ForumPlatform.API.Endpoints
 			.WithName("GetSubforums");
 
 			app.MapGet("/subforums/{subforumId:guid}/threads",
-				async (Guid subforumId, SortMode? sort, IMediator mediator) =>
-					Results.Ok(await mediator.Send(new GetThreadsBySubforumQuery(subforumId, sort ?? SortMode.Activity))))
+				async (Guid subforumId, SortMode? sort, ClaimsPrincipal user, IMediator mediator) =>
+					Results.Ok(await mediator.Send(new GetThreadsBySubforumQuery(subforumId, sort ?? SortMode.Activity, user.TryGetUserId()))))
 			.WithName("GetThreadsBySubforum");
 
 			app.MapGet("/threads/{threadId:guid}",
@@ -103,6 +104,21 @@ namespace ForumPlatform.API.Endpoints
 			app.MapGet("/subforums/mine", async (ClaimsPrincipal user, IMediator mediator) =>
 				Results.Ok(await mediator.Send(new GetMySubforumsQuery(user.GetUserId()))))
 				.WithName("GetMySubforums")
+				.RequireAuthorization();
+
+			// An explicit POST, not a side effect of the GET: reads stay side-effect-free and cacheable.
+			app.MapPost("/threads/{threadId:guid}/visit", async (Guid threadId, ClaimsPrincipal user, IMediator mediator) =>
+			{
+				try
+				{
+					return Results.Ok(await mediator.Send(new RecordThreadVisitCommand(threadId, user.GetUserId())));
+				}
+				catch (InvalidOperationException ex)
+				{
+					return Results.BadRequest(new { error = ex.Message });
+				}
+			})
+				.WithName("RecordThreadVisit")
 				.RequireAuthorization();
 		}
 	}
